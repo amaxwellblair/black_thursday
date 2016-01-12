@@ -13,8 +13,8 @@ class SalesEngine
   end
 
   def load_data(path_hash)
-    items.load_data(path_hash[:items])
-    merchants.load_data(path_hash[:merchants])
+    items.load_data(path_hash[:items]) if !path_hash[:items].nil?
+    merchants.load_data(path_hash[:merchants]) if !path_hash[:merchants].nil?
   end
 
 end
