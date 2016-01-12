@@ -12,9 +12,11 @@ class SalesEngine
     @merchants = MerchantRepository.new
   end
 
-  def load_data(path_hash)
-    items.load_data(path_hash[:items]) if !path_hash[:items].nil?
-    merchants.load_data(path_hash[:merchants]) if !path_hash[:merchants].nil?
+  def self.from_csv(path_hash)
+    sales_engine = self.new
+    sales_engine.items.load_data(path_hash[:items]) if !path_hash[:items].nil?
+    sales_engine.merchants.load_data(path_hash[:merchants]) if !path_hash[:merchants].nil?
+    sales_engine
   end
 
 end
