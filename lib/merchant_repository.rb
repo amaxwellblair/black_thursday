@@ -9,12 +9,6 @@ class MerchantRepository
     @internal_list = []
   end
 
-  def load_data(file_extension)
-    data = CSV.open(file_extension, headers: true, header_converters: :symbol)
-    data.each do |row|
-       list_insert(row[:id].to_i, row[:name])
-    end
-  end
 
   def all
     internal_list
@@ -36,6 +30,13 @@ class MerchantRepository
 
   def list_insert(id, name)
     internal_list << create_merchant(id, name)
+  end
+  
+  def load_data(file_extension)
+    data = CSV.open(file_extension, headers: true, header_converters: :symbol)
+    data.each do |row|
+      list_insert(row[:id].to_i, row[:name])
+    end
   end
 
   def create_merchant(id, name)
