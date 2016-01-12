@@ -50,7 +50,7 @@ class MerchantRepositoryTest < Minitest::Test
 
   def test_load_data
     merc_repo.load_data("./data/merchants.csv")
-    assert_equal "Schroeder-Jerde", merc_repo.find_by_id(1).name
+    assert_equal "Shopin1901", merc_repo.find_by_id(12334105).name
   end
 
 end
