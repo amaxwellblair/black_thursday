@@ -39,6 +39,11 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 10.50, @@accountant.average_price_per_merchant.to_f
   end
 
+  def test_merchants_with_low_item_count
+    names = @@accountant.merchants_with_low_item_count.map{|item| item.name}
+    assert_equal 0, names.length
+  end
+
   def test_golden_items
     names = @@accountant.golden_items.map{|item| item.name}
     assert_equal 5, names.length
@@ -61,7 +66,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_week_day_tally
-    assert_equal [691, 695, 738, 724, 736, 704, 697], @@accountant.week_invoice_tally
+    assert_equal [708, 696, 692, 741, 718, 701, 729], @@accountant.week_invoice_tally
   end
 
   def test_top_days_by_invoice_count

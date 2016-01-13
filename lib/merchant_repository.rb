@@ -8,7 +8,6 @@ class MerchantRepository
     @internal_list = []
   end
 
-
   def all
     internal_list
   end

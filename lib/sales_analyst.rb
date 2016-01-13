@@ -26,6 +26,14 @@ class SalesAnalyst
     Math.sqrt(total_difference / (sales_engine.merchants.all.length - 1)).round(2)
   end
 
+  def merchants_with_low_item_count
+    avg_item_count = average_items_per_merchant
+    std_item_count = average_items_per_merchant_standard_deviation
+    sales_engine.merchants.all.find_all do |merchant|
+      merchant.items.count < (avg_item_count - std_item_count)
+    end
+  end
+
   def average_item_price_for_merchant(merchant_id)
     merchant = sales_engine.merchants.find_by_id(merchant_id)
     total_price = total_item_price(merchant.items)
