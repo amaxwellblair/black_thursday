@@ -22,7 +22,7 @@ class MerchantRepository
 
   def find_all_by_name(substring)
     internal_list.find_all do |merc|
-      /#{Regexp.quote(substring.downcase)}\S+/ =~ merc.name.downcase
+      /#{Regexp.quote(substring.downcase)}\S*/ =~ merc.name.downcase
     end
   end
 

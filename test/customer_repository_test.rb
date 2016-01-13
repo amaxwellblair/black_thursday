@@ -10,8 +10,8 @@ class CustomerRepositoryTest < Minitest::Test
 
   def setup
     @customer_repo = CustomerRepository.new
-    @customer_1 = {id: 1, invoice_id: 2, credit_card_number: 3, credit_card_expiration_date: 4, result: "success", created_at: "2016-01-11 20:56:57 UTC", updated_at: "2016-01-11 20:56:57 UTC"}
-    @customer_2 = {id: 5, invoice_id: 6, credit_card_number: 7, credit_card_expiration_date: 8, result: "success", created_at: "2016-01-11 20:56:57 UTC", updated_at: "2016-01-11 20:56:57 UTC"}
+    @customer_1 = {id: 1, first_name: "John", last_name: "Smith", created_at: "2016-01-11 20:56:57 UTC", updated_at: "2016-01-11 20:56:57 UTC"}
+    @customer_2 = {id: 2, first_name: "Johnny", last_name: "Granny Smith", created_at: "2016-01-11 20:56:57 UTC", updated_at: "2016-01-11 20:56:57 UTC"}
   end
 
   def test_customer_repo_exists
@@ -19,12 +19,12 @@ class CustomerRepositoryTest < Minitest::Test
   end
 
   def test_create_customer
-    assert_equal CustomerRepository::Struct::Transaction, customer_repo.create_customer(customer_1).class
+    assert_equal CustomerRepository::Struct::Customer, customer_repo.create_customer(customer_1).class
   end
 
-  def test_list_insert_name
+  def test_list_insert
     customer_repo.list_insert(customer_1)
-    assert_equal 2, customer_repo.internal_list.first.invoice_id
+    assert_equal "John", customer_repo.internal_list.first.first_name
   end
 
   def test_list_insert_time
@@ -34,47 +34,36 @@ class CustomerRepositoryTest < Minitest::Test
 
   def test_customer_return_all
     customer_repo.list_insert(customer_1)
-    assert_equal 2, customer_repo.all.first.invoice_id
+    assert_equal "John", customer_repo.all.first.first_name
   end
 
   def test_customer_return_find_by_id
     customer_repo.list_insert(customer_1)
-    assert_equal 2, customer_repo.find_by_id(1).invoice_id
+    assert_equal "John", customer_repo.find_by_id(1).first_name
   end
 
-  def test_customer_return_find_all_by_invoice_id
+  def test_customer_return_find_all_by_first_name
     customer_repo.list_insert(customer_1)
-    customer_2[:invoice_id] = 2
     customer_repo.list_insert(customer_2)
-    ids = customer_repo.find_all_by_invoice_id(2).map do |customer|
+    ids = customer_repo.find_all_by_first_name("Jo").map do |customer|
       customer.id
     end
-    assert_equal [1, 5], ids
+    assert_equal [1, 2], ids
   end
 
-  def test_customer_return_find_all_by_credit_card_number
-    customer_repo.list_insert(customer_1)
-    customer_2[:credit_card_number] = 3
-    customer_repo.list_insert(customer_2)
-    ids = customer_repo.find_all_by_credit_card_number(3).map do |customer|
-      customer.id
-    end
-    assert_equal [1, 5], ids
-  end
-
-  def test_customer_return_find_all_by_result
+  def test_customer_return_find_all_by_last_name
     customer_repo.list_insert(customer_1)
     customer_repo.list_insert(customer_2)
-    ids = customer_repo.find_all_by_result("success").map do |customer|
+    ids = customer_repo.find_all_by_last_name("Smith").map do |customer|
       customer.id
     end
-    assert_equal [1, 5], ids
+    assert_equal [1, 2], ids
   end
 
   def test_load_data
     customer_repo.load_data("./data/customers.csv")
-    expected = 4068631943231473
-    assert_equal expected, customer_repo.find_by_id(1).credit_card_number
+    expected = "Joey"
+    assert_equal expected, customer_repo.find_by_id(1).first_name
   end
 
 end

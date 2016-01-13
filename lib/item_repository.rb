@@ -28,7 +28,7 @@ class ItemRepository
 
   def find_all_with_description(substring)
     internal_list.find_all do |item|
-      /#{Regexp.quote(substring.downcase)}\S+/ =~ item.description.downcase
+      /#{Regexp.quote(substring.downcase)}\S*/ =~ item.description.downcase
     end
   end
 
