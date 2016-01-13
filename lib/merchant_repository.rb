@@ -3,7 +3,7 @@ require 'repository'
 require 'pry'
 
 class MerchantRepository
-  attr_reader :internal_list
+  attr_accessor :internal_list
 
   def initialize
     @internal_list = []
@@ -31,7 +31,7 @@ class MerchantRepository
   def list_insert(id, name)
     internal_list << create_merchant(id, name)
   end
-  
+
   def load_data(file_extension)
     data = CSV.open(file_extension, headers: true, header_converters: :symbol)
     data.each do |row|
@@ -40,9 +40,9 @@ class MerchantRepository
   end
 
   def create_merchant(id, name)
-    Struct::Merchant.new(id, name)
+    Struct::Merchant.new(id, name, nil)
   end
 
-  Struct.new("Merchant", :id, :name)
+  Struct.new("Merchant", :id, :name, :items)
 
 end

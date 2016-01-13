@@ -45,11 +45,6 @@ class ItemRepositoryTest < Minitest::Test
     assert_equal "apple", item_repo.find_by_id(1).name
   end
 
-  def test_item_return_find_by_merchant_id
-    item_repo.list_insert(1, "apple", "food", "100", "2016-01-11 20:56:57 UTC", "2016-01-11 20:56:57 UTC", 1)
-    assert_equal "apple", item_repo.find_by_merchant_id(1).name
-  end
-
   def test_item_return_find_by_name
     item_repo.list_insert(1, "apple", "food", "100", "2016-01-11 20:56:57 UTC", "2016-01-11 20:56:57 UTC", 1)
     assert_equal "apple", item_repo.find_by_name("apple").name
@@ -77,6 +72,15 @@ class ItemRepositoryTest < Minitest::Test
     item_repo.list_insert(1, "apple", "food", "100", "2016-01-11 20:56:57 UTC", "2016-01-11 20:56:57 UTC", 1)
     item_repo.list_insert(1, "apple pie", "fooding yummie", "150", "2016-01-11 20:56:57 UTC", "2016-01-11 20:56:57 UTC", 2)
     names = item_repo.find_all_by_price_in_range(1..2).map do |item|
+      item.name
+    end
+    assert_equal ["apple", "apple pie"], names
+  end
+
+  def test_item_return_find_all_by_merchant_id
+    item_repo.list_insert(1, "apple", "food", "100", "2016-01-11 20:56:57 UTC", "2016-01-11 20:56:57 UTC", 1)
+    item_repo.list_insert(1, "apple pie", "fooding yummie", "150", "2016-01-11 20:56:57 UTC", "2016-01-11 20:56:57 UTC", 1)
+    names = item_repo.find_all_by_merchant_id(1).map do |item|
       item.name
     end
     assert_equal ["apple", "apple pie"], names

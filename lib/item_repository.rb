@@ -4,7 +4,7 @@ require 'bigdecimal'
 require 'pry'
 
 class ItemRepository
-  attr_reader :internal_list
+  attr_accessor :internal_list
 
   def initialize
     @internal_list = []
@@ -22,8 +22,8 @@ class ItemRepository
     internal_list.find{|item| name.downcase == item.name.downcase}
   end
 
-  def find_by_merchant_id(merchant_id)
-    internal_list.find{|item| merchant_id == item.merchant_id}
+  def find_all_by_merchant_id(merchant_id)
+    internal_list.find_all{|item| merchant_id == item.merchant_id}
   end
 
   def find_all_with_description(substring)
@@ -57,9 +57,9 @@ class ItemRepository
   end
 
   def create_item(id, name, description, unit_price, created_at, updated_at, merchant_id)
-    Struct::Item.new(id.to_i, name, description, BigDecimal.new("#{unit_price[0..-3]}.#{unit_price[-2..-1]}"), Time.parse(created_at), Time.parse(updated_at), merchant_id)
+    Struct::Item.new(id.to_i, name, description, BigDecimal.new("#{unit_price[0..-3]}.#{unit_price[-2..-1]}"), Time.parse(created_at), Time.parse(updated_at), merchant_id.to_i, nil)
   end
 
-  Struct.new("Item", :id, :name, :description, :unit_price, :created_at, :updated_at, :merchant_id)
+  Struct.new("Item", :id, :name, :description, :unit_price, :created_at, :updated_at, :merchant_id, :merchant)
 
 end
