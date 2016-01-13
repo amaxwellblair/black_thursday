@@ -9,25 +9,39 @@ class SalesEngineTest < Minitest::Test
 
   def setup
     path_hash = {:items => "./data/items.csv",
-                 :merchants => "./data/merchants.csv" }
+                 :merchants => "./data/merchants.csv",
+                 :invoices => "./data/invoices.csv"}
     @cash_register = SalesEngine.from_csv(path_hash)
   end
 
-  def test_merchant_relation
+  def test_merchant_relation_item
     items = cash_register.merchants.all.first.items
     names = items.map { |item| item.name }
     assert_equal ["Vogue Paris Original Givenchy 2307", "Butterick 4236 Bridal Accessories", "Vogue Patterns/Patron 9712"], names
   end
 
-  def test_item_relation
+  def test_item_relation_merchant
     merchant = cash_register.items.all.first.merchant
     name = merchant.name
     assert_equal "jejum", name
   end
 
+  def test_invoice_relation_merchant
+    merchant = cash_register.invoices.all.first.merchant
+    name = merchant.name
+    assert_equal "IanLudiBoards", name
+  end
+
+  def test_merchant_relation_invoice
+    invoices = cash_register.merchants.all.first.invoices
+    ids = invoices.map { |invoice| invoice.id }
+    assert_equal [74, 139, 273, 1195, 1372, 1383, 2629, 3248, 3485, 4227], ids
+  end
+
   def test_load_data
     refute cash_register.items.internal_list.empty?
     refute cash_register.merchants.internal_list.empty?
+    refute cash_register.invoices.internal_list.empty?
   end
 
   def test_load_items_correctly
@@ -38,6 +52,12 @@ class SalesEngineTest < Minitest::Test
 
   def test_load_merchants_correctly
     assert_equal "Shopin1901", cash_register.merchants.find_by_id(12334105).name
+  end
+
+  def test_load_invoices_correctly
+    expected_merc_id = 12335938
+    id = 1
+    assert_equal expected_merc_id, cash_register.invoices.find_by_id(id).merchant_id
   end
 
 end

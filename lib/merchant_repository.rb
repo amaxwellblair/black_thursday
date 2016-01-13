@@ -1,5 +1,4 @@
-require 'CSV'
-require 'repository'
+require 'csv'
 require 'pry'
 
 class MerchantRepository
@@ -40,9 +39,9 @@ class MerchantRepository
   end
 
   def create_merchant(args)
-    Struct::Merchant.new(args[:id].to_i, args[:name], args[:items])
+    Struct::Merchant.new(args[:id].to_i, args[:name], args[:items], args[:invoices])
   end
 
-  Struct.new("Merchant", :id, :name, :items)
+  Struct.new("Merchant", :id, :name, :items, :invoices)
 
 end
