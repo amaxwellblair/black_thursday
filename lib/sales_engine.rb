@@ -32,33 +32,90 @@ class SalesEngine
   end
 
   def relationships
-    merchant_relation_item
-    item_relation_merchant
-    invoice_relation_merchant
-    merchant_relation_invoice
+    merchant_relation_to_item
+    item_relation_to_merchant
+    invoice_relation_to_merchant
+    merchant_relation_to_invoice
+    invoice_relation_to_item
+    invoice_relation_to_transaction
+    invoice_relation_to_customer
+    transaction_relation_to_invoice
+    merchant_relation_to_customers
+    customer_relation_to_merchants
   end
 
-  def merchant_relation_item
+  def merchant_relation_to_item
     merchants.internal_list.each do |merchant|
       merchant.items = items.find_all_by_merchant_id(merchant.id)
     end
   end
 
-  def item_relation_merchant
+  def item_relation_to_merchant
     items.internal_list.each do |item|
       item.merchant = merchants.find_by_id(item.merchant_id)
     end
   end
 
-  def invoice_relation_merchant
+  def invoice_relation_to_merchant
     invoices.internal_list.each do |invoice|
       invoice.merchant = merchants.find_by_id(invoice.merchant_id)
     end
   end
 
-  def merchant_relation_invoice
+  def merchant_relation_to_invoice
     merchants.internal_list.each do |merchant|
       merchant.invoices = invoices.find_all_by_merchant_id(merchant.id)
+    end
+  end
+
+  def invoice_relation_to_item
+    invoice_gets_item_id.each do |invoice_items|
+      next if invoice_items.empty?
+      invoices.find_by_id(invoice_items.first.invoice_id).items =
+      invoice_items.map do |invoice_item|
+        items.find_by_id(invoice_item.item_id )
+      end
+    end
+  end
+
+  def invoice_gets_item_id
+    invoices.internal_list.map do |invoice|
+      invoice_items.find_all_by_invoice_id(invoice.id)
+    end
+  end
+
+  def invoice_relation_to_transaction
+    invoices.internal_list.each do |invoice|
+      invoice.transactions = transactions.find_all_by_invoice_id(invoice.id)
+    end
+  end
+
+  def invoice_relation_to_customer
+    invoices.internal_list.each do |invoice|
+      invoice.customer = customers.find_by_id(invoice.customer_id)
+    end
+  end
+
+  def transaction_relation_to_invoice
+    transactions.internal_list.each do |transaction|
+      transaction.invoice = invoices.find_by_id(transaction.invoice_id)
+    end
+  end
+
+  def merchant_relation_to_customers
+    merchants.internal_list.each do |merchant|
+      merchant.customers = merchant.invoices.map do |invoice|
+        customers.find_by_id(invoice.customer_id)
+      end
+    end
+  end
+
+  def customer_relation_to_merchants
+    customers.internal_list.each do |customer|
+      customer.merchants =
+      invoices.find_all_by_customer_id(customer.id).map do |invoice|
+        merchants.find_by_id(invoice.merchant_id)
+      end
     end
   end
 

@@ -15,7 +15,7 @@ class CustomerRepository
   end
 
   def find_by_id(id)
-    internal_list.find{|transaction| id == transaction.id}
+    internal_list.find{|customer| id == customer.id}
   end
 
   def find_all_by_first_name(substring)
@@ -44,9 +44,9 @@ class CustomerRepository
   def create_customer(args)
     Struct::Customer.new(args[:id].to_i, args[:first_name], args[:last_name],
                          Time.parse(args[:created_at]),
-                         Time.parse(args[:updated_at]))
+                         Time.parse(args[:updated_at]), args[:merchants])
   end
 
-  Struct.new("Customer", :id, :first_name, :last_name, :created_at, :updated_at)
+  Struct.new("Customer", :id, :first_name, :last_name, :created_at, :updated_at, :merchants)
 
 end

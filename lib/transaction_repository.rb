@@ -56,9 +56,9 @@ class TransactionRepository
                      args[:credit_card_expiration_date].to_i,
                      args[:result],
                      Time.parse(args[:created_at]),
-                     Time.parse(args[:updated_at]))
+                     Time.parse(args[:updated_at]), nil)
   end
 
-  Struct.new("Transaction", :id, :invoice_id, :credit_card_number, :credit_card_expiration_date, :result, :created_at, :updated_at)
+  Struct.new("Transaction", :id, :invoice_id, :credit_card_number, :credit_card_expiration_date, :result, :created_at, :updated_at, :invoice)
 
 end

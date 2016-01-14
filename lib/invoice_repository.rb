@@ -46,9 +46,9 @@ class InvoiceRepository
                         args[:merchant_id].to_i, args[:status],
                         Time.parse(args[:created_at]),
                         Time.parse(args[:updated_at]),
-                        nil)
+                        nil, nil, nil, nil)
   end
 
-  Struct.new("Invoice", :id, :customer_id, :merchant_id, :status, :created_at, :updated_at, :merchant)
+  Struct.new("Invoice", :id, :customer_id, :merchant_id, :status, :created_at, :updated_at, :merchant, :items, :transactions, :customer)
 
 end

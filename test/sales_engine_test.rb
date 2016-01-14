@@ -79,5 +79,40 @@ class SalesEngineTest < Minitest::Test
     assert_equal [74, 139, 273, 1195, 1372, 1383, 2629, 3248, 3485, 4227], ids
   end
 
+  def test_invoice_relation_to_item
+    invoice = @@cash_register.invoices.all.first
+    assert_equal "Catnip Pillow / Cat Toy Containing Strong Dried CATNIP", invoice.items.first.name
+  end
+
+  def test_invoice_relation_to_transaction
+    invoice = @@cash_register.invoices.all.first
+    assert_equal 4068631943231473, invoice.transactions.first.credit_card_number
+  end
+
+  def test_invoice_relation_to_customers
+    invoice = @@cash_register.invoices.all.first
+    assert_equal "Joey", invoice.customer.first_name
+  end
+
+  def test_transaction_relation_to_invoice
+    transaction = @@cash_register.transactions.all.first
+    assert_equal 12335938, transaction.invoice.merchant_id
+  end
+
+  def test_merchant_relation_to_customers
+    merchant = @@cash_register.merchants.all.first
+    names = merchant.customers.map do |customer|
+      customer.first_name
+    end
+    assert_equal "Casimer", names.first
+  end
+
+  def test_customer_relation_to_merchants
+    customer = @@cash_register.customers.all.first
+    names = customer.merchants.map do |merchant|
+      merchant.name
+    end
+    assert_equal "IanLudiBoards", names.first
+  end
 
 end

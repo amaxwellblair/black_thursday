@@ -38,9 +38,9 @@ class MerchantRepository
   end
 
   def create_merchant(args)
-    Struct::Merchant.new(args[:id].to_i, args[:name], args[:items], args[:invoices])
+    Struct::Merchant.new(args[:id].to_i, args[:name], args[:items], args[:invoices], args[:customers])
   end
 
-  Struct.new("Merchant", :id, :name, :items, :invoices)
+  Struct.new("Merchant", :id, :name, :items, :invoices, :customers)
 
 end

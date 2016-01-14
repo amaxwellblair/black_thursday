@@ -108,7 +108,8 @@ class SalesAnalyst
   def week_invoice_tally
     week_day_tallies = [0, 0, 0, 0, 0, 0, 0]
     sales_engine.invoices.all.each do |invoice|
-      week_day_tallies[invoice.created_at.wday] += 1
+      indices_of_weekday = invoice.created_at.wday
+      week_day_tallies[indices_of_weekday] += 1
     end
     week_day_tallies
   end
