@@ -86,7 +86,10 @@ class SalesEngineTest < Minitest::Test
 
   def test_invoice_relation_to_transaction
     invoice = @@cash_register.invoices.all.first
-    assert_equal 4068631943231473, invoice.transactions.first.credit_card_number
+    numbers = invoice.transactions.map do |transaction|
+      transaction.credit_card_number
+    end
+    assert_equal [4306389908591848, 4880303970900271], numbers
   end
 
   def test_invoice_relation_to_customers
@@ -96,7 +99,7 @@ class SalesEngineTest < Minitest::Test
 
   def test_transaction_relation_to_invoice
     transaction = @@cash_register.transactions.all.first
-    assert_equal 12335938, transaction.invoice.merchant_id
+    assert_equal 12334633, transaction.invoice.merchant_id
   end
 
   def test_merchant_relation_to_customers
@@ -113,6 +116,21 @@ class SalesEngineTest < Minitest::Test
       merchant.name
     end
     assert_equal "IanLudiBoards", names.first
+  end
+
+  def test_invoice_paid_in_full_true
+    invoice = @@cash_register.invoices.all.first
+    assert_equal true, invoice.paid_in_full?
+  end
+
+  def test_invoice_paid_in_full_false
+    invoice = @@cash_register.invoices.find_by_id(1840)
+    assert_equal false, invoice.paid_in_full?
+  end
+
+  def test_invoice_total
+    invoice = @@cash_register.invoices.internal_list.first
+    assert_equal 2562.44, invoice.total.to_f.round(2)
   end
 
 end

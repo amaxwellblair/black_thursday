@@ -1,4 +1,5 @@
 require 'csv'
+require 'invoice'
 require 'bigdecimal'
 require 'time'
 require 'pry'
@@ -42,13 +43,7 @@ class InvoiceRepository
   end
 
   def create_invoice(args)
-    Struct::Invoice.new(args[:id].to_i, args[:customer_id].to_i,
-                        args[:merchant_id].to_i, args[:status],
-                        Time.parse(args[:created_at]),
-                        Time.parse(args[:updated_at]),
-                        nil, nil, nil, nil)
+    Invoice.new(args)
   end
-
-  Struct.new("Invoice", :id, :customer_id, :merchant_id, :status, :created_at, :updated_at, :merchant, :items, :transactions, :customer)
 
 end
