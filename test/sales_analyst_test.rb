@@ -19,7 +19,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_avg_item_per_merchant
-    assert_equal 2.88, @@accountant.average_items_per_merchant
+    assert_equal 2.87, @@accountant.average_items_per_merchant
   end
 
   def test_std_item_per_merchant
@@ -35,8 +35,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_average_price_per_merchant_for_all_merchants
-    skip
-    assert_equal 10.50, @@accountant.average_price_per_merchant.to_f
+    assert_equal 349.42, @@accountant.average_price_per_merchant.to_f
   end
 
   def test_merchants_with_low_item_count
@@ -50,11 +49,11 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_avg_invoice_per_merchant
-    assert_equal 10.49, @@accountant.average_invoices_per_merchant
+    assert_equal 10.47, @@accountant.average_invoices_per_merchant
   end
 
   def test_avg_invoice_per_merchant_std
-    assert_equal 3.29, @@accountant.average_invoices_per_merchant_standard_deviation
+    assert_equal 3.32, @@accountant.average_invoices_per_merchant_standard_deviation
   end
 
   def test_top_merchants_by_invoice_count
@@ -62,7 +61,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_bottom_merchants_by_invoice_count
-    assert_equal 4, @@accountant.bottom_merchants_by_invoice_count.length
+    assert_equal 5, @@accountant.bottom_merchants_by_invoice_count.length
   end
 
   def test_week_day_tally

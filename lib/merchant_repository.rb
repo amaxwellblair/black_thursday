@@ -1,5 +1,6 @@
 require 'csv'
 require 'pry'
+require 'merchant'
 
 class MerchantRepository
   attr_accessor :internal_list
@@ -26,6 +27,33 @@ class MerchantRepository
     end
   end
 
+  def revenue(date)
+    #fix or double check this when the spec harness comes in (how is date being passed in?)
+    all_invoices = internal_list.map do |merc|
+      merc.invoices.find_all do |invoice|
+        date.strftime("%B %d, %Y") == invoice.created_at.strftime("%B %d, %Y")
+      end
+    end.flatten
+    total_revenue(all_invoices)
+  end
+
+  def total_revenue(invoices)
+    invoices.inject(0) do |sum, invoice|
+      if invoice.paid_in_full?
+        sum + invoice.total
+      else
+        sum
+      end
+    end
+  end
+
+  def most_revenue(number)
+    internal_list.sort_by{|merc| merc.revenue}[0..(number - 1)]
+  end
+
+  def top_percent
+  end
+
   def list_insert(args)
     internal_list << create_merchant(args)
   end
@@ -38,9 +66,7 @@ class MerchantRepository
   end
 
   def create_merchant(args)
-    Struct::Merchant.new(args[:id].to_i, args[:name], args[:items], args[:invoices], args[:customers])
+    Merchant.new(args)
   end
-
-  Struct.new("Merchant", :id, :name, :items, :invoices, :customers)
 
 end

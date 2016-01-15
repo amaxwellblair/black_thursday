@@ -133,4 +133,43 @@ class SalesEngineTest < Minitest::Test
     assert_equal 2562.44, invoice.total.to_f.round(2)
   end
 
+  def test_single_merchant_revenue
+    merchant = @@cash_register.merchants.all.first
+    assert_equal 4180.94, merchant.revenue
+  end
+
+  def test_merchants_revenue_on_a_specific_date
+    assert_equal 2562.44, @@cash_register.merchants.revenue(Time.parse("2009-02-07")).to_f
+  end
+
+  def test_merchants_most_revenue_count
+    skip
+    assert_equal 5, @@cash_register.merchants.most_revenue(5).count
+  end
+
+  def test_merchants_most_revenue_count_name
+    skip
+    assert_equal "name", @@cash_register.merchants.most_revenue(5).first.name
+  end
+
+  def test_merchants_most_revenue_nothing_in_the_arguments
+    skip
+    assert_equal 1, @@cash_register.merchants.most_revenue.count
+  end
+
+  def test_merchants_top_percentile
+    skip
+    assert_equal 3, @@cash_register.merchants.all.in_percentile.count
+  end
+
+  def test_merchants_top_percent
+    skip
+    assert_equal 3, @@cash_register.merchants.all.top_percent.count
+  end
+
+  def test_merchants_by_month
+    skip
+    assert_equal 5, @@cash_register.merchants.most_revenue.by_month("January").length
+  end
+
 end
