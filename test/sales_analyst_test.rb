@@ -10,7 +10,10 @@ class SalesAnalystTest < Minitest::Test
 
   @path_hash = {:items => "./data/items.csv",
                :merchants => "./data/merchants.csv",
-               :invoices => "./data/invoices.csv"}
+               :invoices => "./data/invoices.csv",
+               :invoice_items => "./data/invoice_items.csv",
+               :transactions => "./data/transactions.csv",
+               :customers => "./data/customers.csv"}
   @cash_register = SalesEngine.from_csv(@path_hash)
   @@accountant = SalesAnalyst.new(@cash_register)
 
@@ -35,7 +38,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_average_price_per_merchant_for_all_merchants
-    assert_equal 349.42, @@accountant.average_price_per_merchant.to_f
+    assert_equal 349.56, @@accountant.average_price_per_merchant.to_f
   end
 
   def test_merchants_with_low_item_count
@@ -73,12 +76,71 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_invoice_tally
-    expected = {:shipped=>2839, :pending=>1473}
+    expected = {:shipped=>2839, :pending=>1473, :returned=>673}
     assert_equal expected, @@accountant.invoice_status_tally
   end
 
   def test_percentage_of_invoices_at_status
-    assert_equal 34.16, @@accountant.invoice_status(:pending)
-    assert_equal 65.84, @@accountant.invoice_status(:shipped)
+    assert_equal 29.55, @@accountant.invoice_status(:pending)
+    assert_equal 56.95, @@accountant.invoice_status(:shipped)
+    assert_equal 13.50, @@accountant.invoice_status(:returned)
   end
+
+  def test_return_dollar_amount_invoice_total
+    invoice = @@accountant.sales_engine.invoices.all.first
+    expected = invoice.total.to_f
+
+    assert invoice.paid_in_full?
+    assert_equal 21067.77, expected
+  end
+
+  def test_single_merchant_revenue
+    merchant = @@accountant.sales_engine.merchants.all.first
+    assert_equal 73777.17, merchant.revenue.to_f
+  end
+
+  def test_merchants_revenue_on_a_specific_date
+    assert_equal 21067.77, @@accountant.sales_engine.merchants.revenue(Time.parse("2009-02-07")).to_f
+  end
+
+  def test_merchants_most_revenue_count
+    assert_equal 5, @@accountant.top_revenue_earners(5).count
+  end
+
+  def test_merchants_most_revenue_count_name
+    assert_equal "HoggardWoodworks", @@accountant.top_revenue_earners(5).first.name
+  end
+
+  def test_merchants_most_revenue_nothing_in_the_arguments
+    assert_equal 96, @@accountant.top_revenue_earners.count
+  end
+
+  def test_merchants_top_percent
+    merchants = @@accountant.merchants_ranked_by_revenue
+    assert_equal 96, @@accountant.top_percent(merchants, 0.20).count
+  end
+
+  def test_merchants_by_month
+    skip
+    merchants = @@accountant.merchants_ranked_by_revenue
+    assert_equal 5, @@accountant.by_month(merchants, "January").length
+  end
+
+  def test_top_buyers
+    assert_equal 10, @@accountant.top_buyers(10).length
+  end
+
+  def test_top_buyers
+    assert_equal "Fisher", @@accountant.top_buyers(1).first.last_name
+  end
+
+  def test_top_merchant_for_customer
+    assert_equal 12336753, @@accountant.top_merchant_for_customer(100).id
+  end
+
+  def test_one_time_buyers
+    skip
+    assert_equal 4, @@accountant.one_time_buyers
+  end
+
 end

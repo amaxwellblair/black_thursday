@@ -1,3 +1,4 @@
+require 'pry'
 class Merchant
   attr_accessor :id, :name, :items, :invoices, :customers
 

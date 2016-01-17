@@ -42,6 +42,7 @@ class SalesEngine
     transaction_relation_to_invoice
     merchant_relation_to_customers
     customer_relation_to_merchants
+    invoice_relation_to_total
   end
 
   def merchant_relation_to_item
@@ -69,18 +70,35 @@ class SalesEngine
   end
 
   def invoice_relation_to_item
-    invoice_gets_item_id.each do |invoice_items|
+    invoice_gets_invoice_items.each do |invoice_items|
       next if invoice_items.empty?
       invoices.find_by_id(invoice_items.first.invoice_id).items =
-      invoice_items.map do |invoice_item|
-        items.find_by_id(invoice_item.item_id )
+      invoice_items.flat_map do |invoice_item|
+        invoice_item.quantity.times.map do
+          items.find_by_id(invoice_item.item_id)
+        end
       end
     end
   end
 
-  def invoice_gets_item_id
+  def invoice_gets_invoice_items
     invoices.internal_list.map do |invoice|
       invoice_items.find_all_by_invoice_id(invoice.id)
+    end
+  end
+
+  def total_per_invoice
+    invoice_gets_invoice_items.map do |invoice_items|
+      invoice_items.inject(0) do |sum, invoice_item|
+        sum + invoice_item.unit_price * invoice_item.quantity
+      end
+    end
+  end
+
+  def invoice_relation_to_total
+    total = total_per_invoice
+    invoices.all.each.with_index do |invoice, index|
+      invoice.total = total[index]
     end
   end
 
