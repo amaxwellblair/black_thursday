@@ -1,7 +1,6 @@
+require_relative 'invoice_item'
 require 'csv'
 require 'time'
-require 'bigdecimal'
-require 'pry'
 
 class InvoiceItemRepository
   attr_accessor :internal_list
@@ -41,18 +40,12 @@ class InvoiceItemRepository
     end
   end
 
-  def make_bigdecimal(unit_price)
-    BigDecimal.new("#{unit_price[0..-3]}.#{unit_price[-2..-1]}")
-  end
-
   def create_invoice_item(args)
-    Struct::InvoiceItem.new(args[:id].to_i, args[:item_id].to_i, args[:invoice_id].to_i,
-                     args[:quantity].to_i,
-                     make_bigdecimal(args[:unit_price]),
-                     Time.parse(args[:created_at]),
-                     Time.parse(args[:updated_at]))
+    InvoiceItem.new(args)
   end
 
-  Struct.new("InvoiceItem", :id, :item_id, :invoice_id, :quantity, :unit_price, :created_at, :updated_at)
+  def inspect
+    "#<#{self.class} #{@internal_list.size} rows>"
+  end
 
 end

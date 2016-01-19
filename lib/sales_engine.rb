@@ -1,9 +1,9 @@
-require 'item_repository'
-require 'merchant_repository'
-require 'invoice_repository'
-require 'invoice_item_repository'
-require 'transaction_repository'
-require 'customer_repository'
+require_relative 'item_repository'
+require_relative 'merchant_repository'
+require_relative 'invoice_repository'
+require_relative 'invoice_item_repository'
+require_relative 'transaction_repository'
+require_relative 'customer_repository'
 require 'bigdecimal'
 require 'pry'
 
@@ -73,10 +73,8 @@ class SalesEngine
     invoice_gets_invoice_items.each do |invoice_items|
       next if invoice_items.empty?
       invoices.find_by_id(invoice_items.first.invoice_id).items =
-      invoice_items.flat_map do |invoice_item|
-        invoice_item.quantity.times.map do
-          items.find_by_id(invoice_item.item_id)
-        end
+      invoice_items.map do |invoice_item|
+        items.find_by_id(invoice_item.item_id)
       end
     end
   end
@@ -124,7 +122,7 @@ class SalesEngine
     merchants.internal_list.each do |merchant|
       merchant.customers = merchant.invoices.map do |invoice|
         customers.find_by_id(invoice.customer_id)
-      end
+      end.uniq
     end
   end
 

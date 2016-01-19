@@ -1,6 +1,6 @@
 require 'csv'
 require 'pry'
-require 'merchant'
+require_relative 'merchant'
 
 class MerchantRepository
   attr_accessor :internal_list
@@ -39,7 +39,7 @@ class MerchantRepository
 
   def total_revenue(invoices)
     invoices.inject(0) do |sum, invoice|
-      if invoice.paid_in_full?
+      if invoice.is_paid_in_full?
         sum + invoice.total
       else
         sum
@@ -67,6 +67,10 @@ class MerchantRepository
 
   def create_merchant(args)
     Merchant.new(args)
+  end
+
+  def inspect
+    "#<#{self.class} #{@internal_list.size} rows>"
   end
 
 end

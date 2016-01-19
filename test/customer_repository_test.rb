@@ -19,7 +19,7 @@ class CustomerRepositoryTest < Minitest::Test
   end
 
   def test_create_customer
-    assert_equal CustomerRepository::Struct::Customer, customer_repo.create_customer(customer_1).class
+    assert_equal Customer, customer_repo.create_customer(customer_1).class
   end
 
   def test_list_insert

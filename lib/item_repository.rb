@@ -1,5 +1,6 @@
 require 'csv'
 require 'time'
+require_relative 'item'
 require 'bigdecimal'
 require 'pry'
 
@@ -57,18 +58,19 @@ class ItemRepository
   end
 
   def create_item(args)
-    Struct::Item.new(args[:id].to_i, args[:name], args[:description],
-                     make_bigdecimal(args[:unit_price]),
-                     Time.parse(args[:created_at]),
-                     Time.parse(args[:updated_at]),
-                     args[:merchant_id].to_i, nil)
+    Item.new(args)
   end
 
   def make_bigdecimal(unit_price)
-    BigDecimal.new("#{unit_price[0..-3]}.#{unit_price[-2..-1]}")
+    if unit_price.class == String
+      BigDecimal.new("#{unit_price[0..-3]}.#{unit_price[-2..-1]}")
+    else
+      BigDecimal.new(unit_price)
+    end
   end
 
-  Struct.new("Item", :id, :name, :description, :unit_price, :created_at,
-                     :updated_at, :merchant_id, :merchant)
+  def inspect
+    "#<#{self.class} #{@internal_list.size} rows>"
+  end
 
 end

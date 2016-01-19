@@ -23,6 +23,12 @@ class SalesEngineTest < Minitest::Test
     refute @@cash_register.customers.internal_list.empty?
   end
 
+  def test_items_repository_integration_test_on_finding_price
+    price = BigDecimal.new(2500)
+    expected = @@cash_register.items.find_all_by_price(price)
+    assert_equal 2, expected.length
+  end
+
   def test_load_items_correctly
     expected_name = "A Variety of Fragrance Oils for Oil Burners, Potpourri, Resins + More, Lavender, Patchouli, Nag Champa, Rose, Vanilla, White Linen, Angel"
     id = 263397163
@@ -120,17 +126,27 @@ class SalesEngineTest < Minitest::Test
 
   def test_invoice_paid_in_full_true
     invoice = @@cash_register.invoices.all.first
-    assert_equal true, invoice.paid_in_full?
+    assert_equal true, invoice.is_paid_in_full?
   end
 
   def test_invoice_paid_in_full_false
     invoice = @@cash_register.invoices.find_by_id(1840)
-    assert_equal false, invoice.paid_in_full?
+    assert_equal false, invoice.is_paid_in_full?
   end
 
   def test_invoice_total
     invoice = @@cash_register.invoices.internal_list.first
     assert_equal 21067.77, invoice.total.to_f.round(2)
+  end
+
+  def test_merchants_have_correct_number_of_customers
+    merchant = @@cash_register.merchants.find_by_id(12334194)
+    assert_equal 12, merchant.customers.length
+  end
+
+  def test_merchants_have_correct_number_of_customers
+    invoice = @@cash_register.invoices.find_by_id(106)
+    assert_equal 7, invoice.items.length
   end
 
 end

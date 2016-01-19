@@ -1,7 +1,6 @@
 require 'csv'
 require 'date'
-require 'sales_engine'
-require 'bigdecimal'
+require_relative 'sales_engine'
 require 'pry'
 
 class SalesAnalyst
@@ -26,11 +25,11 @@ class SalesAnalyst
     Math.sqrt(total_difference / (sales_engine.merchants.all.length - 1)).round(2)
   end
 
-  def merchants_with_low_item_count
+  def merchants_with_high_item_count
     avg_item_count = average_items_per_merchant
     std_item_count = average_items_per_merchant_standard_deviation
     sales_engine.merchants.all.find_all do |merchant|
-      merchant.items.count < (avg_item_count - std_item_count)
+      merchant.items.count > (avg_item_count + std_item_count)
     end
   end
 
@@ -46,7 +45,7 @@ class SalesAnalyst
     end
   end
 
-  def average_price_per_merchant
+  def average_average_price_per_merchant
     total_avg_price = sales_engine.merchants.all.inject(0) do |sum_m, merchant|
       items_price = total_item_price(merchant.items)
       if items_price == 0
@@ -67,7 +66,7 @@ class SalesAnalyst
   end
 
   def golden_items
-    avg_item_price = total_item_price(sales_engine.items.all) / sales_engine.items.all.length
+    avg_item_price = average_average_price_per_merchant
     std_item_price = item_price_standard_deviation
     sales_engine.items.all.find_all do |item|
       item.unit_price > (avg_item_price + 2*std_item_price)
@@ -132,7 +131,7 @@ class SalesAnalyst
     std = average_invoices_per_day_standard_deviation
     tally = week_invoice_tally
     day_indices = (0..6).find_all do |index|
-      tally[index] > (avg + 2*std)
+      tally[index] > (avg + std)
     end
     index_to_day(day_indices)
   end
@@ -157,7 +156,7 @@ class SalesAnalyst
     ((tally[status].to_f / (tally_total))*100).round(2)
   end
 
-  def merchants_revenue_by_date(date)
+  def total_revenue_by_date(date)
     all_invoices = sales_engine.merchants.internal_list.map do |merc|
       merc.invoices.find_all do |invoice|
         date.strftime("%B %d, %Y") == invoice.created_at.strftime("%B %d, %Y")
@@ -168,7 +167,7 @@ class SalesAnalyst
 
   def total_revenue(invoices)
     invoices.inject(0) do |sum, invoice|
-      if invoice.paid_in_full?
+      if invoice.is_paid_in_full?
         sum + invoice.total
       else
         sum
@@ -178,7 +177,7 @@ class SalesAnalyst
 
   def top_revenue_earners(number = nil)
     if number.nil?
-      top_percent(merchants_ranked_by_revenue, 0.20)
+      merchants_ranked_by_revenue[0..20 - 1]
     else
       merchants_ranked_by_revenue[0..number - 1]
     end
@@ -200,6 +199,10 @@ class SalesAnalyst
     sales_engine.merchants.all.sort_by do |merchant|
       -merchant.revenue
     end
+  end
+
+  def revenue_by_merchant(merchant_id)
+    sales_engine.merchants.find_by_id(merchant_id).revenue
   end
 
   def top_buyers(number)
@@ -227,7 +230,49 @@ class SalesAnalyst
     end.first
   end
 
-  #
+  def merchants_with_pending_invoices
+    sales_engine.merchants.all.find_all do |merchant|
+      merchant.invoices.any?{|invoice| invoice.status == :pending}
+    end
+  end
+
+  def merchants_with_only_one_item
+    sales_engine.merchants.all.find_all do |merchant|
+      merchant.items.length == 1
+    end
+  end
+
+  def merchants_with_only_one_item_registered_in_month(month)
+    merchants_with_only_one_item.find_all do |merchant|
+      merchant.created_at.strftime("%B").downcase == month.downcase
+    end
+  end
+
+  def most_sold_item_for_merchant(merchant_id)
+    merchant = sales_engine.merchants.find_by_id(merchant_id)
+    merchant.items.sort_by do |item|
+      -sales_engine.invoice_items.find_all_by_item_id(item.id).inject(0) do |sum, invoice_item|
+        if sales_engine.invoices.find_by_id(invoice_item.invoice_id).is_paid_in_full?
+          sum + invoice_item.quantity
+        else
+          sum
+        end
+      end
+    end.first
+  end
+
+  def best_item_for_merchant(merchant_id)
+    merchant = sales_engine.merchants.find_by_id(merchant_id)
+    merchant.items.sort_by do |item|
+      -sales_engine.invoice_items.find_all_by_item_id(item.id).inject(0) do |sum, invoice_item|
+        if sales_engine.invoices.find_by_id(invoice_item.invoice_id).is_paid_in_full?
+          sum + (invoice_item.quantity * invoice_item.unit_price)
+        else
+          sum
+        end
+      end
+    end.first
+  end
   # customers.internal_list.each do |customer|
   #   customer.merchants =
   #   invoices.find_all_by_customer_id(customer.id).map do |invoice|

@@ -19,7 +19,7 @@ class ItemRepositoryTest < Minitest::Test
   end
 
   def test_create_item
-    assert_equal ItemRepository::Struct::Item, item_repo.create_item(item_1).class
+    assert_equal Item, item_repo.create_item(item_1).class
   end
 
   def test_list_insert_name

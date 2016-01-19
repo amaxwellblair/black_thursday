@@ -1,6 +1,6 @@
 require 'csv'
 require 'time'
-require 'bigdecimal'
+require_relative 'customer'
 require 'pry'
 
 class CustomerRepository
@@ -42,11 +42,11 @@ class CustomerRepository
   end
 
   def create_customer(args)
-    Struct::Customer.new(args[:id].to_i, args[:first_name], args[:last_name],
-                         Time.parse(args[:created_at]),
-                         Time.parse(args[:updated_at]), args[:merchants])
+    Customer.new(args)
   end
 
-  Struct.new("Customer", :id, :first_name, :last_name, :created_at, :updated_at, :merchants)
+  def inspect
+    "#<#{self.class} #{@internal_list.size} rows>"
+  end
 
 end

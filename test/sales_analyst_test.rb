@@ -38,17 +38,18 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_average_price_per_merchant_for_all_merchants
-    assert_equal 349.56, @@accountant.average_price_per_merchant.to_f
+    assert_equal 349.56, @@accountant.average_average_price_per_merchant.to_f
   end
 
-  def test_merchants_with_low_item_count
-    names = @@accountant.merchants_with_low_item_count.map{|item| item.name}
-    assert_equal 0, names.length
+  def test_merchants_with_high_item_count
+    names = @@accountant.merchants_with_high_item_count.map{|item| item.name}
+    assert_equal 52, names.length
   end
 
   def test_golden_items
-    names = @@accountant.golden_items.map{|item| item.name}
-    assert_equal 5, names.length
+    items = @@accountant.golden_items
+    assert_equal 5, items.length
+    # assert_equal Item, items.class
   end
 
   def test_avg_invoice_per_merchant
@@ -72,7 +73,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_top_days_by_invoice_count
-    assert_equal [], @@accountant.top_days_by_invoice_count
+    assert_equal ["Wednesday"], @@accountant.top_days_by_invoice_count
   end
 
   def test_invoice_tally
@@ -90,7 +91,7 @@ class SalesAnalystTest < Minitest::Test
     invoice = @@accountant.sales_engine.invoices.all.first
     expected = invoice.total.to_f
 
-    assert invoice.paid_in_full?
+    assert invoice.is_paid_in_full?
     assert_equal 21067.77, expected
   end
 
@@ -100,7 +101,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_merchants_revenue_on_a_specific_date
-    assert_equal 21067.77, @@accountant.sales_engine.merchants.revenue(Time.parse("2009-02-07")).to_f
+    assert_equal 21067.77, @@accountant.total_revenue_by_date(Time.parse("2009-02-07"))
   end
 
   def test_merchants_most_revenue_count
@@ -112,18 +113,12 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_merchants_most_revenue_nothing_in_the_arguments
-    assert_equal 96, @@accountant.top_revenue_earners.count
+    assert_equal 20, @@accountant.top_revenue_earners.count
   end
 
   def test_merchants_top_percent
     merchants = @@accountant.merchants_ranked_by_revenue
     assert_equal 96, @@accountant.top_percent(merchants, 0.20).count
-  end
-
-  def test_merchants_by_month
-    skip
-    merchants = @@accountant.merchants_ranked_by_revenue
-    assert_equal 5, @@accountant.by_month(merchants, "January").length
   end
 
   def test_top_buyers
@@ -138,9 +133,24 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 12336753, @@accountant.top_merchant_for_customer(100).id
   end
 
-  def test_one_time_buyers
-    skip
-    assert_equal 4, @@accountant.one_time_buyers
+  def test_merchants_with_pending_invoices
+    assert_equal 91, @@accountant.merchants_with_pending_invoices.length
+  end
+
+  def test_merchants_with_one_item_in_their_items
+    assert_equal 243, @@accountant.merchants_with_only_one_item.length
+  end
+
+  def test_merchants_with_only_one_item_in_inserted_month
+    assert_equal 21, @@accountant.merchants_with_only_one_item_registered_in_month("March").length
+  end
+
+  def test_most_sold_item_for_merchant
+    assert_equal "Avon Collectible 1985 Christmas Bell", @@accountant.most_sold_item_for_merchant(12336753).name
+  end
+
+  def test_best_item_for_merchant_returns_the_item_with_most_revenue
+    assert_equal "Avon Collectible 1985 Christmas Bell", @@accountant.best_item_for_merchant(12336753).name
   end
 
 end

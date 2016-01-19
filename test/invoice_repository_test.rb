@@ -53,7 +53,7 @@ class InvoiceRepositoryTest < Minitest::Test
   def test_find_all_by_status
     invoice_repo.list_insert(invoice_1)
     invoice_repo.list_insert(invoice_2)
-    ids = invoice_repo.find_all_by_status("pending").map{|invoice| invoice.id}
+    ids = invoice_repo.find_all_by_status(:pending).map{|invoice| invoice.id}
     assert_equal [1, 4], ids
   end
 

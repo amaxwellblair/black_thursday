@@ -1,6 +1,6 @@
 require 'csv'
 require 'time'
-require 'bigdecimal'
+require_relative 'transaction'
 require 'pry'
 
 class TransactionRepository
@@ -47,18 +47,12 @@ class TransactionRepository
     end
   end
 
-  def make_bigdecimal(unit_price)
-    BigDecimal.new("#{unit_price[0..-3]}.#{unit_price[-2..-1]}")
-  end
-
   def create_transaction(args)
-    Struct::Transaction.new(args[:id].to_i, args[:invoice_id].to_i, args[:credit_card_number].to_i,
-                     args[:credit_card_expiration_date].to_i,
-                     args[:result],
-                     Time.parse(args[:created_at]),
-                     Time.parse(args[:updated_at]), nil)
+    Transaction.new(args)
   end
 
-  Struct.new("Transaction", :id, :invoice_id, :credit_card_number, :credit_card_expiration_date, :result, :created_at, :updated_at, :invoice)
+  def inspect
+    "#<#{self.class} #{@internal_list.size} rows>"
+  end
 
 end

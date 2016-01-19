@@ -19,7 +19,7 @@ class InvoiceItemRepositoryTest < Minitest::Test
   end
 
   def test_create_invoice_item
-    assert_equal InvoiceItemRepository::Struct::InvoiceItem, invoice_item_repo.create_invoice_item(invoice_item_1).class
+    assert_equal InvoiceItem, invoice_item_repo.create_invoice_item(invoice_item_1).class
   end
 
   def test_list_insert

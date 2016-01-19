@@ -1,5 +1,5 @@
 require 'csv'
-require 'invoice'
+require_relative 'invoice'
 require 'bigdecimal'
 require 'time'
 require 'pry'
@@ -44,6 +44,10 @@ class InvoiceRepository
 
   def create_invoice(args)
     Invoice.new(args)
+  end
+
+  def inspect
+    "#<#{self.class} #{@internal_list.size} rows>"
   end
 
 end

@@ -19,7 +19,7 @@ class TransactionRepositoryTest < Minitest::Test
   end
 
   def test_create_transaction
-    assert_equal TransactionRepository::Struct::Transaction, transaction_repo.create_transaction(transaction_1).class
+    assert_equal Transaction, transaction_repo.create_transaction(transaction_1).class
   end
 
   def test_list_insert
