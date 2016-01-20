@@ -1,3 +1,5 @@
+require 'simplecov'
+SimpleCov.start
 require 'minitest/autorun'
 require 'minitest/pride'
 require 'pry'
@@ -19,7 +21,7 @@ class MerchantRepositoryTest < Minitest::Test
   end
 
   def test_create_merchant
-    assert_equal MerchantRepository::Struct::Merchant, merc_repo.create_merchant(merc_1).class
+    assert_equal Merchant, merc_repo.create_merchant(merc_1).class
   end
 
   def test_list_insert
