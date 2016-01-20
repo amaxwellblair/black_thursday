@@ -198,7 +198,7 @@ class SalesAnalyst
 
   def merchants_with_pending_invoices
     sales_engine.merchants.all.find_all do |merchant|
-      merchant.invoices.any?{|invoice| invoice.is_paid_in_full?}
+      merchant.invoices.any?{|invoice| !invoice.is_paid_in_full?}
     end
   end
 
@@ -216,40 +216,76 @@ class SalesAnalyst
 
   def most_sold_item_for_merchant(merchant_id)
     merchant = sales_engine.merchants.find_by_id(merchant_id)
-    item_quantity_sold = quantity_of_items(merchant)
-    max_quantity = item_quantity_sold.max_by(&:to_i)
-    merchant.items.find_all.with_index do |item, index|
-      max_quantity == item_quantity_sold[index]
+    invoices = merchant.invoices.find_all(&:is_paid_in_full?)
+    invoice_items = invoices.flat_map do |invoice|
+      sales_engine.invoice_items.find_all_by_invoice_id(invoice.id)
     end
+    item_counts = invoice_items.inject({}) do |hash, invoice_item|
+      hash[invoice_item.item_id] = 0 if hash[invoice_item.item_id].nil?
+      hash[invoice_item.item_id] += invoice_item.quantity
+      hash
+    end
+    most_sold = item_counts.max_by{|key, value| value}.last
+    item_ids = item_counts.find_all do |key, value|
+      most_sold == value
+    end.map(&:first)
+    item_ids.map {|item_id| sales_engine.items.find_by_id(item_id)}
   end
 
-  def quantity_of_items(merchant)
-    merchant.items.map do |item|
-      invoice_items = sales_engine.invoice_items.find_all_by_item_id(item.id)
-      invoice_items.inject(0) do |sum, invoice_item|
-        invoice = sales_engine.invoices.find_by_id(invoice_item.invoice_id)
-        if invoice.is_paid_in_full?
-          sum + invoice_item.quantity
-        else
-          sum
-        end
-      end
-    end
-  end
+
+  #
+  # def most_sold_item_for_merchant(merchant_id)
+  #   merchant = sales_engine.merchants.find_by_id(merchant_id)
+  #   item_quantity_sold = quantity_of_items(merchant)
+  #   max_quantity = item_quantity_sold.max_by(&:to_i)
+  #   merchant.items.find_all.with_index do |item, index|
+  #     max_quantity == item_quantity_sold[index]
+  #   end
+  # end
+  #
+  # def quantity_of_items(merchant)
+  #   merchant.items.map do |item|
+  #     invoice_items = sales_engine.invoice_items.find_all_by_item_id(item.id)
+  #     invoice_items.inject(0) do |sum, invoice_item|
+  #       invoice = sales_engine.invoices.find_by_id(invoice_item.invoice_id)
+  #       if invoice.is_paid_in_full?
+  #         sum + invoice_item.quantity
+  #       else
+  #         sum
+  #       end
+  #     end
+  #   end
+  # end
+  #
+  # def best_item_for_merchant(merchant_id)
+  #   merchant = sales_engine.merchants.find_by_id(merchant_id)
+  #   merchant.items.sort_by do |item|
+  #     invoice_items = sales_engine.invoice_items.find_all_by_item_id(item.id)
+  #     -invoice_items.inject(0) do |sum, invoice_item|
+  #       invoice = sales_engine.invoices.find_by_id(invoice_item.invoice_id)
+  #       if invoice.is_paid_in_full?
+  #         sum + (invoice_item.quantity * invoice_item.unit_price)
+  #       else
+  #         sum
+  #       end
+  #     end
+  #   end.first
+  # end
+
 
   def best_item_for_merchant(merchant_id)
     merchant = sales_engine.merchants.find_by_id(merchant_id)
-    merchant.items.sort_by do |item|
-      invoice_items = sales_engine.invoice_items.find_all_by_item_id(item.id)
-      -invoice_items.inject(0) do |sum, invoice_item|
-        invoice = sales_engine.invoices.find_by_id(invoice_item.invoice_id)
-        if invoice.is_paid_in_full?
-          sum + (invoice_item.quantity * invoice_item.unit_price)
-        else
-          sum
-        end
-      end
-    end.first
+    invoices = merchant.invoices.find_all(&:is_paid_in_full?)
+    invoice_items = invoices.flat_map do |invoice|
+      sales_engine.invoice_items.find_all_by_invoice_id(invoice.id)
+    end
+    item_counts = invoice_items.inject({}) do |hash, invoice_item|
+      hash[invoice_item.item_id] = 0 if hash[invoice_item.item_id].nil?
+      hash[invoice_item.item_id]+=invoice_item.quantity*invoice_item.unit_price
+      hash
+    end
+    sales_engine.items.find_by_id(item_counts.max_by{|key, value| value}.first)
   end
+
 
 end
