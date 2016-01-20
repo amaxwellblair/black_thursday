@@ -8,7 +8,8 @@ require 'bigdecimal'
 require 'pry'
 
 class SalesEngine
-  attr_reader :items, :merchants, :invoices, :invoice_items, :transactions, :customers
+  attr_reader :items, :merchants, :invoices, :invoice_items, :transactions,
+              :customers
 
   def initialize
     @items = ItemRepository.new
@@ -21,12 +22,12 @@ class SalesEngine
 
   def self.from_csv(path_hash)
     sales_engine = self.new
-    sales_engine.items.load_data(path_hash[:items]) if !path_hash[:items].nil?
-    sales_engine.merchants.load_data(path_hash[:merchants]) if !path_hash[:merchants].nil?
-    sales_engine.invoices.load_data(path_hash[:invoices]) if !path_hash[:invoices].nil?
-    sales_engine.invoice_items.load_data(path_hash[:invoice_items]) if !path_hash[:invoice_items].nil?
-    sales_engine.transactions.load_data(path_hash[:transactions]) if !path_hash[:transactions].nil?
-    sales_engine.customers.load_data(path_hash[:customers]) if !path_hash[:customers].nil?
+    sales_engine.items.load_data(path_hash[:items])
+    sales_engine.merchants.load_data(path_hash[:merchants])
+    sales_engine.invoices.load_data(path_hash[:invoices])
+    sales_engine.invoice_items.load_data(path_hash[:invoice_items])
+    sales_engine.transactions.load_data(path_hash[:transactions])
+    sales_engine.customers.load_data(path_hash[:customers])
     sales_engine.relationships
     sales_engine
   end
@@ -96,7 +97,7 @@ class SalesEngine
   def invoice_relation_to_total
     total = total_per_invoice
     invoices.all.each.with_index do |invoice, index|
-      invoice.total = total[index]
+      invoice.total = total[index]/100.0
     end
   end
 

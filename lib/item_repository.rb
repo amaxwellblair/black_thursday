@@ -63,7 +63,7 @@ class ItemRepository
 
   def make_bigdecimal(unit_price)
     if unit_price.class == String
-      BigDecimal.new("#{unit_price[0..-3]}.#{unit_price[-2..-1]}")
+      BigDecimal.new("#{unit_price}")
     else
       BigDecimal.new(unit_price)
     end

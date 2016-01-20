@@ -34,7 +34,7 @@ class ItemRepositoryTest < Minitest::Test
 
   def test_list_insert_big_decimal
     item_repo.list_insert(item_1)
-    assert_equal BigDecimal.new("1.00"), item_repo.internal_list.first.unit_price
+    assert_equal BigDecimal.new("100"), item_repo.internal_list.first.unit_price
   end
 
   def test_item_return_all
@@ -75,7 +75,7 @@ class ItemRepositoryTest < Minitest::Test
     item_repo.list_insert(item_1)
     item_2[:unit_price] = "150"
     item_repo.list_insert(item_2)
-    names = item_repo.find_all_by_price_in_range(1..2).map do |item|
+    names = item_repo.find_all_by_price_in_range(100..200).map do |item|
       item.name
     end
     assert_equal ["apple", "apple pie"], names

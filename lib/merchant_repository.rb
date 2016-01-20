@@ -28,7 +28,6 @@ class MerchantRepository
   end
 
   def revenue(date)
-    #fix or double check this when the spec harness comes in (how is date being passed in?)
     all_invoices = internal_list.map do |merc|
       merc.invoices.find_all do |invoice|
         date.strftime("%B %d, %Y") == invoice.created_at.strftime("%B %d, %Y")

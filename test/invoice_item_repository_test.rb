@@ -34,7 +34,7 @@ class InvoiceItemRepositoryTest < Minitest::Test
 
   def test_list_insert_big_decimal
     invoice_item_repo.list_insert(invoice_item_1)
-    assert_equal BigDecimal.new("200.00"), invoice_item_repo.internal_list.first.unit_price
+    assert_equal BigDecimal.new("20000"), invoice_item_repo.internal_list.first.unit_price
   end
 
   def test_invoice_item_return_all

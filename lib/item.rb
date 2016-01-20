@@ -12,13 +12,17 @@ class Item
     @created_at = Time.parse(args[:created_at])
     @updated_at = Time.parse(args[:updated_at])
     @merchant_id = args[:merchant_id].to_i
-    @unit_price_to_dollars = make_bigdecimal(args[:unit_price]).to_f
+    @unit_price_to_dollars = make_unit_price_to_dollars(args[:unit_price]).to_f
     @merchant = 0
+  end
+
+  def make_unit_price_to_dollars(string)
+    make_bigdecimal("#{string[0..-3]}.#{string[-2..-1]}")
   end
 
   def make_bigdecimal(unit_price)
     if unit_price.class == String
-      BigDecimal.new("#{unit_price[0..-3]}.#{unit_price[-2..-1]}")
+      BigDecimal.new("#{unit_price}")
     else
       BigDecimal.new(unit_price)
     end

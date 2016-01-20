@@ -23,12 +23,6 @@ class SalesEngineTest < Minitest::Test
     refute @@cash_register.customers.internal_list.empty?
   end
 
-  def test_items_repository_integration_test_on_finding_price
-    price = BigDecimal.new(2500)
-    expected = @@cash_register.items.find_all_by_price(price)
-    assert_equal 2, expected.length
-  end
-
   def test_load_items_correctly
     expected_name = "A Variety of Fragrance Oils for Oil Burners, Potpourri, Resins + More, Lavender, Patchouli, Nag Champa, Rose, Vanilla, White Linen, Angel"
     id = 263397163

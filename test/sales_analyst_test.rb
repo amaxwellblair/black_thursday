@@ -116,25 +116,8 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 20, @@accountant.top_revenue_earners.count
   end
 
-  def test_merchants_top_percent
-    merchants = @@accountant.merchants_ranked_by_revenue
-    assert_equal 96, @@accountant.top_percent(merchants, 0.20).count
-  end
-
-  def test_top_buyers
-    assert_equal 10, @@accountant.top_buyers(10).length
-  end
-
-  def test_top_buyers
-    assert_equal "Fisher", @@accountant.top_buyers(1).first.last_name
-  end
-
-  def test_top_merchant_for_customer
-    assert_equal 12336753, @@accountant.top_merchant_for_customer(100).id
-  end
-
   def test_merchants_with_pending_invoices
-    assert_equal 91, @@accountant.merchants_with_pending_invoices.length
+    assert_equal 474, @@accountant.merchants_with_pending_invoices.length
   end
 
   def test_merchants_with_one_item_in_their_items
@@ -146,7 +129,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_most_sold_item_for_merchant
-    assert_equal "Avon Collectible 1985 Christmas Bell", @@accountant.most_sold_item_for_merchant(12336753).name
+    assert_equal "Avon Collectible 1985 Christmas Bell", @@accountant.most_sold_item_for_merchant(12336753).first.name
   end
 
   def test_best_item_for_merchant_returns_the_item_with_most_revenue
