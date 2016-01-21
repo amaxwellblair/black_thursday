@@ -6,13 +6,13 @@ class InvoiceItem
                 :updated_at
 
   def initialize(args)
-    @id = args[:id].to_i
-    @item_id = args[:item_id].to_i
-    @invoice_id = args[:invoice_id].to_i
-    @quantity = args[:quantity].to_i
-    @unit_price = make_bigdecimal(args[:unit_price])
-    @created_at = Time.parse(args[:created_at])
-    @updated_at = Time.parse(args[:updated_at])
+    @id = args.fetch(:id, 0).to_i
+    @item_id = args.fetch(:item_id, 0).to_i
+    @invoice_id = args.fetch(:invoice_id, 0).to_i
+    @quantity = args.fetch(:quantity, 0).to_i
+    @unit_price = make_bigdecimal(args.fetch(:unit_price, 0))
+    @created_at = Time.parse(args.fetch(:created_at, "12/1/2020"))
+    @updated_at = Time.parse(args.fetch(:updated_at, "12/1/2020"))
   end
 
   def make_bigdecimal(unit_price)

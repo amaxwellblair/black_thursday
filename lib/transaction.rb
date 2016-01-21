@@ -6,13 +6,13 @@ class Transaction
                 :updated_at, :invoice
 
   def initialize(args)
-    @id = args[:id].to_i
-    @invoice_id = args[:invoice_id].to_i
-    @credit_card_number = args[:credit_card_number].to_i
-    @credit_card_expiration_date = args[:credit_card_expiration_date]
-    @result = args[:result]
-    @created_at = Time.parse(args[:created_at])
-    @updated_at = Time.parse(args[:updated_at])
+    @id = args.fetch(:id, 0).to_i
+    @invoice_id = args.fetch(:invoice_id, 0).to_i
+    @credit_card_number = args.fetch(:credit_card_number, 0).to_i
+    @credit_card_expiration_date = args.fetch(:credit_card_expiration_date, "0")
+    @result = args.fetch(:result, "0")
+    @created_at = Time.parse(args.fetch(:created_at, "12/1/2020"))
+    @updated_at = Time.parse(args.fetch(:updated_at, "12/1/2020"))
     @invoice = 0
   end
 

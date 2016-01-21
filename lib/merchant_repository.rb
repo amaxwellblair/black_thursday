@@ -27,32 +27,6 @@ class MerchantRepository
     end
   end
 
-  def revenue(date)
-    all_invoices = internal_list.map do |merc|
-      merc.invoices.find_all do |invoice|
-        date.strftime("%B %d, %Y") == invoice.created_at.strftime("%B %d, %Y")
-      end
-    end.flatten
-    total_revenue(all_invoices)
-  end
-
-  def total_revenue(invoices)
-    invoices.inject(0) do |sum, invoice|
-      if invoice.is_paid_in_full?
-        sum + invoice.total
-      else
-        sum
-      end
-    end
-  end
-
-  def most_revenue(number)
-    internal_list.sort_by{|merc| merc.revenue}[0..(number - 1)]
-  end
-
-  def top_percent
-  end
-
   def list_insert(args)
     internal_list << create_merchant(args)
   end

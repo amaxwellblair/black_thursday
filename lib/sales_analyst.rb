@@ -220,11 +220,7 @@ class SalesAnalyst
     invoice_items = invoices.flat_map do |invoice|
       sales_engine.invoice_items.find_all_by_invoice_id(invoice.id)
     end
-    item_counts = invoice_items.inject({}) do |hash, invoice_item|
-      hash[invoice_item.item_id] = 0 if hash[invoice_item.item_id].nil?
-      hash[invoice_item.item_id] += invoice_item.quantity
-      hash
-    end
+    item_counts = merchant_items_sold(invoice_items)
     most_sold = item_counts.max_by{|key, value| value}.last
     item_ids = item_counts.find_all do |key, value|
       most_sold == value
@@ -232,46 +228,13 @@ class SalesAnalyst
     item_ids.map {|item_id| sales_engine.items.find_by_id(item_id)}
   end
 
-
-  #
-  # def most_sold_item_for_merchant(merchant_id)
-  #   merchant = sales_engine.merchants.find_by_id(merchant_id)
-  #   item_quantity_sold = quantity_of_items(merchant)
-  #   max_quantity = item_quantity_sold.max_by(&:to_i)
-  #   merchant.items.find_all.with_index do |item, index|
-  #     max_quantity == item_quantity_sold[index]
-  #   end
-  # end
-  #
-  # def quantity_of_items(merchant)
-  #   merchant.items.map do |item|
-  #     invoice_items = sales_engine.invoice_items.find_all_by_item_id(item.id)
-  #     invoice_items.inject(0) do |sum, invoice_item|
-  #       invoice = sales_engine.invoices.find_by_id(invoice_item.invoice_id)
-  #       if invoice.is_paid_in_full?
-  #         sum + invoice_item.quantity
-  #       else
-  #         sum
-  #       end
-  #     end
-  #   end
-  # end
-  #
-  # def best_item_for_merchant(merchant_id)
-  #   merchant = sales_engine.merchants.find_by_id(merchant_id)
-  #   merchant.items.sort_by do |item|
-  #     invoice_items = sales_engine.invoice_items.find_all_by_item_id(item.id)
-  #     -invoice_items.inject(0) do |sum, invoice_item|
-  #       invoice = sales_engine.invoices.find_by_id(invoice_item.invoice_id)
-  #       if invoice.is_paid_in_full?
-  #         sum + (invoice_item.quantity * invoice_item.unit_price)
-  #       else
-  #         sum
-  #       end
-  #     end
-  #   end.first
-  # end
-
+  def merchant_items_sold(invoice_items)
+    invoice_items.inject({}) do |hash, invoice_item|
+      hash[invoice_item.item_id] = 0 if hash[invoice_item.item_id].nil?
+      hash[invoice_item.item_id] += invoice_item.quantity
+      hash
+    end
+  end
 
   def best_item_for_merchant(merchant_id)
     merchant = sales_engine.merchants.find_by_id(merchant_id)
@@ -287,5 +250,45 @@ class SalesAnalyst
     sales_engine.items.find_by_id(item_counts.max_by{|key, value| value}.first)
   end
 
+  def find_single_sale_discount(invoice_item_id)
+    invoice_item = sales_engine.invoice_items.find_by_id(invoice_item_id)
+    item = sales_engine.items.find_by_id(invoice_item.item_id)
+    (invoice_item.unit_price / item.unit_price - 1).round(2).to_f
+  end
+
+  def invoice_sticker_revenue(invoice_id)
+    invoice = sales_engine.invoices.find_by_id(invoice_id)
+    return 0 if !invoice.is_paid_in_full?
+    invoice_items=sales_engine.invoice_items.find_all_by_invoice_id(invoice.id)
+    invoice_items.inject(0) do |sum, invoice_item|
+      sum+invoice_item.quantity*item_by_invoice_item(invoice_item).unit_price
+    end.to_f
+  end
+
+  def item_by_invoice_item(invoice_item)
+    sales_engine.items.find_by_id(invoice_item.item_id)
+  end
+
+  def find_invoice_discount(invoice_id)
+    invoice = sales_engine.invoices.find_by_id(invoice_id)
+    return 0 if !invoice.is_paid_in_full?
+    (invoice.total / invoice_sticker_revenue(invoice.id) - 1).to_f.round(2)
+  end
+
+  def merchant_average_discount(merchant_id)
+    merchant = sales_engine.merchants.find_by_id(merchant_id)
+    total_discounts = merchant.invoices.inject(0) do |sum, invoice|
+      sum + find_invoice_discount(invoice.id)
+    end
+    return 0 if merchant.invoices.empty?
+    (total_discounts / merchant.invoices.length).round(2)
+  end
+
+  def merchants_average_average_discount
+    total_discount = sales_engine.merchants.all.inject(0) do |sum, merchant|
+      sum + merchant_average_discount(merchant.id)
+    end
+    (total_discount / sales_engine.merchants.all.length).round(2)
+  end
 
 end

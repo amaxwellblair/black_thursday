@@ -119,7 +119,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_merchants_with_pending_invoices
-    assert_equal 474, @@accountant.merchants_with_pending_invoices.length
+    assert_equal 467, @@accountant.merchants_with_pending_invoices.length
   end
 
   def test_merchants_with_one_item_in_their_items
@@ -131,11 +131,12 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_most_sold_item_for_merchant
-    assert_equal "Avon Collectible 1985 Christmas Bell", @@accountant.most_sold_item_for_merchant(12336753).first.name
+    assert_equal "Gray Hollister Sweatpant Medium", @@accountant.most_sold_item_for_merchant(12336753).first.name
   end
 
   def test_best_item_for_merchant_returns_the_item_with_most_revenue
-    assert_equal "Avon Collectible 1985 Christmas Bell", @@accountant.best_item_for_merchant(12336753).name
+    assert_equal "knit baby yoda hat", @@accountant.best_item_for_merchant(12336753).name
   end
+
 
 end
